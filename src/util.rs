@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 pub struct Fibonacci {
     a: u128,
     b: u128,
@@ -135,6 +137,56 @@ impl<T: Clone> Matrix<T> {
             width,
             height,
             inner,
+        }
+    }
+}
+
+#[allow(dead_code)]
+fn divisors<I>(n: I) -> BTreeSet<I>
+where
+    I: num::Integer + num::integer::Roots + num::traits::NumAssign + Copy,
+{
+    let mut res = BTreeSet::new();
+    let max = n.sqrt();
+    let mut x = I::one();
+
+    while x <= max {
+        let (d, r) = n.div_rem(&x);
+        if r.is_zero() {
+            res.insert(d);
+            res.insert(x);
+        }
+        x += I::one();
+    }
+
+    res
+}
+
+pub struct Factorial<T> {
+    n: T,
+    prev: T,
+}
+
+impl<T: num::Integer> Factorial<T> {
+    pub fn new() -> Self {
+        Self {
+            n: T::zero(),
+            prev: T::zero(),
+        }
+    }
+}
+
+impl<T: num::Integer + num::traits::NumAssign + Copy> Iterator for Factorial<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.n.is_zero() {
+            self.n += T::one();
+            Some(T::one())
+        } else {
+            self.prev += self.n;
+            self.n += T::one();
+            Some(self.prev)
         }
     }
 }

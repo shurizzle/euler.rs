@@ -1,10 +1,19 @@
-fn divisors_len(n: u64) -> u64 {
-    let mut res = 0;
+use crate::util::Factorial;
 
-    for x in 1..=((n as f64).sqrt().floor() as u64) {
-        if n % x == 0 {
-            res += 2;
+fn divisors_len<I>(n: I) -> I
+where
+    I: num::Integer + num::integer::Roots + num::traits::NumAssign + Copy,
+{
+    let mut res = I::zero();
+    let max = n.sqrt();
+    let mut x = I::one();
+
+    while x <= max {
+        if n % x == I::zero() {
+            res += I::one();
+            res += I::one();
         }
+        x += I::one();
     }
 
     res
@@ -13,8 +22,7 @@ fn divisors_len(n: u64) -> u64 {
 pub fn solve() {
     print!(
         "{}",
-        (1u64..)
-            .map(|x| (1..=x).sum())
+        Factorial::<u64>::new()
             .find(|&x| divisors_len(x) > 500)
             .unwrap()
     );
