@@ -15,10 +15,11 @@ impl Iterator for Fibonacci {
     type Item = u128;
 
     fn next(&mut self) -> Option<Self::Item> {
+        let res = self.a;
         let tmp = self.a + self.b;
         self.a = self.b;
         self.b = tmp;
-        Some(tmp)
+        Some(res)
     }
 }
 
