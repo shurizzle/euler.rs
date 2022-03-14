@@ -1,3 +1,5 @@
+use num::Integer;
+use primes::{PrimeSet, Sieve};
 use std::collections::BTreeSet;
 
 pub struct Fibonacci {
@@ -190,4 +192,48 @@ impl<T: num::Integer + num::traits::NumAssign + Copy> Iterator for Factorial<T> 
             Some(self.prev)
         }
     }
+}
+
+pub fn divisors_len_s<P, N>(n: N, primes: &mut P) -> usize
+where
+    P: PrimeSet,
+    N: Integer + From<u64> + Copy,
+{
+    let mut nod = 1;
+    let mut remain = n;
+
+    for p in primes.iter() {
+        let prime: N = p.into();
+
+        if prime * prime > n {
+            return nod * 2;
+        }
+
+        {
+            let mut exp = 1;
+            while {
+                let (d, r) = remain.div_rem(&prime);
+                if r.is_zero() {
+                    exp += 1;
+                    remain = d;
+                    true
+                } else {
+                    false
+                }
+            } {}
+            nod *= exp;
+        }
+
+        if remain.is_one() {
+            return nod;
+        }
+    }
+    unreachable!()
+}
+
+pub fn divisors_len<N>(n: N) -> usize
+where
+    N: Integer + From<u64> + Copy,
+{
+    divisors_len_s(n, &mut Sieve::new())
 }
